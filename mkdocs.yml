@@ -1,0 +1,13 @@
+site_name: toothbrush
+site_description: Sample project generated from jacebrowning/template-python.
+site_author: Thomas Vincent
+repo_url: https://github.com/thomasvincent/toothbrush
+
+theme: readthedocs
+
+pages:
+- Home: index.md
+- About:
+  - Release Notes: about/changelog.md
+  - Contributing: about/contributing.md
+  - License: about/license.md

@@ -1,104 +1,45 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
+# Temporary Python files
+*.pyc
+*.egg-info
+__pycache__
 .ipynb_checkpoints
 
-# pyenv
-.python-version
+# Temporary OS files
+Icon*
 
-# celery beat schedule file
-celerybeat-schedule
+# Temporary virtual environment files
+/.cache/
+/.venv/
 
-# SageMath parsed files
-*.sage.py
-
-# Environments
+# Temporary server files
 .env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+*.pid
 
-# Spyder project settings
-.spyderproject
-.spyproject
+# Generated documentation
+/docs/gen/
+/docs/apidocs/
+/site/
+/*.html
+/docs/*.png
 
-# Rope project settings
-.ropeproject
+# Google Drive
+*.gdoc
+*.gsheet
+*.gslides
+*.gdraw
 
-# mkdocs documentation
-/site
+# Testing and coverage results
+/.coverage
+/.coverage.*
+/htmlcov/
 
-# mypy
-.mypy_cache/
+# Build and release directories
+/build/
+/dist/
+*.spec
+
+# Sublime Text
+*.sublime-workspace
+
+# Eclipse
+.settings
