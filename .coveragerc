@@ -1,7 +1,7 @@
 [run]
+branch = True
 
-branch = true
-
+[report]
 omit =
     .venv/*
     */tests/*
