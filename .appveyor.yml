@@ -1,26 +1,23 @@
 environment:
   global:
-    RANDOM_SEED: 0
+    - RANDOM_SEED: 0
   matrix:
-    - PYTHON_MAJOR: 3
-      PYTHON_MINOR: 7
+    - PYTHON: 3.7
 
 cache:
-  - .venv -> Makefile
+  - .venv
+  - pip
 
 install:
-  # Add Make and Python to the PATH
-  - copy C:\MinGW\bin\mingw32-make.exe C:\MinGW\bin\make.exe
-  - set PATH=%PATH%;C:\MinGW\bin
-  - set PATH=C:\Python%PYTHON_MAJOR%%PYTHON_MINOR%;%PATH%
-  - set PATH=C:\Python%PYTHON_MAJOR%%PYTHON_MINOR%\Scripts;%PATH%
-  # Install system dependencies
+  - choco install make
+  - choco install python --version %PYTHON%
+  - set PATH=%PATH%;C:\Program Files (x86)\GNU\Make;C:\Python%PYTHON%\Scripts
   - pip install pipenv
   - make doctor
-  # Install project dependencies
   - make install
 
-build: off
+build:
+  off
 
 test_script:
   - make check
