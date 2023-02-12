@@ -1,20 +1,38 @@
-machine:
+version: 2.1
+
+executors:
   python:
-    version: 3.6.1
-  environment:
-    RANDOM_SEED: 0
+    docker:
+      - image: circleci/python:3.6.1
 
-dependencies:
-  pre:
-    - pip install pipenv
-    - make doctor
-  override:
-    - make install
-  cache_directories:
-    - .venv
+environment:
+  RANDOM_SEED: 0
 
-test:
-  override:
-    - make check
-    - make test-unit REPORTS=${CIRCLE_TEST_REPORTS}
-    - make test-int REPORTS=${CIRCLE_TEST_REPORTS}
+jobs:
+  build:
+    executor: python
+    steps:
+      - checkout
+      - run:
+          name: Install pipenv
+          command: |
+            pip install pipenv
+      - run:
+          name: Run doctor check
+          command: make doctor
+      - run:
+          name: Install dependencies
+          command: make install
+      - save_cache:
+          key: venv-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - .venv
+      - run:
+          name: Run unit tests
+          command: make test-unit REPORTS=${CIRCLE_TEST_REPORTS}
+      - run:
+          name: Run integration tests
+          command: make test-int REPORTS=${CIRCLE_TEST_REPORTS}
+      - run:
+          name: Check code quality
+          command: make check
