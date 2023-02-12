@@ -1,10 +1,10 @@
 """Configuration file for sniffer."""
-# pylint: disable=superfluous-parens,bad-continuation
 
 import time
 import subprocess
 
 from sniffer.api import select_runnable, file_validator, runnable
+
 try:
     from pync import Notifier
 except ImportError:
@@ -12,43 +12,41 @@ except ImportError:
 else:
     notify = Notifier.notify
 
-
 watch_paths = ["toothbrush", "tests"]
 
 
-class Options(object):
+class Options:
     group = int(time.time())  # unique per run
     show_coverage = False
     rerun_args = None
 
     targets = [
-        (('make', 'test-unit', 'DISABLE_COVERAGE=true'), "Unit Tests", True),
-        (('make', 'test-all'), "Integration Tests", False),
-        (('make', 'check'), "Static Analysis", True),
-        (('make', 'docs'), None, True),
+        (("make", "test-unit", "DISABLE_COVERAGE=true"), "Unit Tests", True),
+        (("make", "test-all"), "Integration Tests", False),
+        (("make", "check"), "Static Analysis", True),
+        (("make", "docs"), None, True),
     ]
 
 
-@select_runnable('run_targets')
+@select_runnable("run_targets")
 @file_validator
 def python_files(filename):
-    return filename.endswith('.py')
+    return filename.endswith(".py")
 
 
-@select_runnable('run_targets')
+@select_runnable("run_targets")
 @file_validator
 def html_files(filename):
-    return filename.split('.')[-1] in ['html', 'css', 'js']
+    return filename.split(".")[-1] in ["html", "css", "js"]
 
 
 @runnable
 def run_targets(*args):
     """Run targets for Python."""
-    Options.show_coverage = 'coverage' in args
+    Options.show_coverage = "coverage" in args
 
     count = 0
     for count, (command, title, retry) in enumerate(Options.targets, start=1):
-
         success = call(command, title, retry)
         if not success:
             message = "✅ " * (count - 1) + "❌"
@@ -74,7 +72,7 @@ def call(command, title, retry):
             return False
 
     print("")
-    print("$ %s" % ' '.join(command))
+    print(f"$ {' '.join(command)}")
     failure = subprocess.call(command)
 
     if failure and retry:
@@ -92,6 +90,6 @@ def show_notification(message, title):
 def show_coverage():
     """Launch the coverage report."""
     if Options.show_coverage:
-        subprocess.call(['make', 'read-coverage'])
+        subprocess.call(["make", "read-coverage"])
 
     Options.show_coverage = False
