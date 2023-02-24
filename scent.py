@@ -1,9 +1,7 @@
-"""Configuration file for sniffer."""
-
-import time
+import os
 import subprocess
 
-from sniffer.api import select_runnable, file_validator, runnable
+from sniffer.api import file_validator, runnable, select_runnable
 
 try:
     from pync import Notifier
@@ -12,67 +10,60 @@ except ImportError:
 else:
     notify = Notifier.notify
 
-watch_paths = ["toothbrush", "tests"]
-
+WATCH_PATHS = ["toothbrush", "tests"]
 
 class Options:
-    group = int(time.time())  # unique per run
+    group = int(time.time())
     show_coverage = False
     rerun_args = None
 
     targets = [
-        (("make", "test-unit", "DISABLE_COVERAGE=true"), "Unit Tests", True),
-        (("make", "test-all"), "Integration Tests", False),
-        (("make", "check"), "Static Analysis", True),
-        (("make", "docs"), None, True),
+        (["make", "test-unit", "DISABLE_COVERAGE=true"], "Unit Tests", True),
+        (["make", "test-all"], "Integration Tests", False),
+        (["make", "check"], "Static Analysis", True),
+        (["make", "docs"], None, True),
     ]
-
 
 @select_runnable("run_targets")
 @file_validator
 def python_files(filename):
     return filename.endswith(".py")
 
-
 @select_runnable("run_targets")
 @file_validator
 def html_files(filename):
     return filename.split(".")[-1] in ["html", "css", "js"]
 
-
 @runnable
 def run_targets(*args):
-    """Run targets for Python."""
+    """Run the specified targets."""
     Options.show_coverage = "coverage" in args
 
-    count = 0
+    num_failures = 0
     for count, (command, title, retry) in enumerate(Options.targets, start=1):
-        success = call(command, title, retry)
+        success = run_command(command, title, retry)
         if not success:
-            message = "✅ " * (count - 1) + "❌"
-            show_notification(message, title)
+            num_failures = count
+            break
 
-            return False
+    if num_failures == 0:
+        show_notification("✅ " * count, "All Targets")
+        show_coverage()
+        return True
+    else:
+        show_notification("✅ " * (num_failures - 1) + "❌", Options.targets[num_failures - 1][1])
+        return False
 
-    message = "✅ " * count
-    title = "All Targets"
-    show_notification(message, title)
-    show_coverage()
-
-    return True
-
-
-def call(command, title, retry):
-    """Run a command-line program and display the result."""
+def run_command(command, title, retry):
+    """Run a command and display the result."""
     if Options.rerun_args:
         command, title, retry = Options.rerun_args
         Options.rerun_args = None
-        success = call(command, title, retry)
+        success = run_command(command, title, retry)
         if not success:
             return False
 
-    print("")
-    print(f"$ {' '.join(command)}")
+    print(f"Running command: {' '.join(command)}")
     failure = subprocess.call(command)
 
     if failure and retry:
@@ -80,12 +71,10 @@ def call(command, title, retry):
 
     return not failure
 
-
 def show_notification(message, title):
     """Show a user notification."""
     if notify and title:
         notify(message, title=title, group=Options.group)
-
 
 def show_coverage():
     """Launch the coverage report."""
