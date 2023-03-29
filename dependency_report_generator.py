@@ -1,14 +1,16 @@
 import os
 import re
 
+
 def parse_requirements_file(file_path):
-    """Parse the requirements file and return a list of dependencies."""
+    """Parse a requirements file and return a list of dependencies."""
     with open(file_path) as file:
         dependencies = [line.strip() for line in file if line.strip() and not line.startswith("#")]
     return dependencies
 
+
 def parse_dockerfile(file_path):
-    """Parse the Dockerfile and return a list of dependencies."""
+    """Parse a Dockerfile and return a list of dependencies."""
     dependencies = []
     with open(file_path) as file:
         for line in file:
@@ -19,7 +21,8 @@ def parse_dockerfile(file_path):
                     dependencies.extend(match.group(1).split())
     return dependencies
 
-def compare_dependencies(file_paths):
+
+def generate_dependency_report(file_paths):
     """Compare the dependencies in the given files and return a report."""
     reports = {}
     for file_path in file_paths:
@@ -40,10 +43,15 @@ def compare_dependencies(file_paths):
             report += f"  - {dependency}\n"
     return report
 
+
 def main(file_paths):
     """Print the dependency report to the console."""
-    report = compare_dependencies(file_paths)
-    print(report)
+    try:
+        report = generate_dependency_report(file_paths)
+        print(report)
+    except FileNotFoundError as e:
+        print(f"Error: {e}")
+
 
 if __name__ == "__main__":
     file_paths = ["requirements.txt", "Dockerfile"]
