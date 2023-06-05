@@ -1,17 +1,16 @@
-import os
 from typing import List
+from pathlib import Path
 
 class DependencyChecker:
     def __init__(self, requirements_file: str, dockerfile: str):
-        self.requirements_file = requirements_file
-        self.dockerfile = dockerfile
+        self.requirements_file = Path(requirements_file)
+        self.dockerfile = Path(dockerfile)
 
-    def get_dependencies(self, file_path: str) -> List[str]:
-        try:
-            with open(file_path, "r") as f:
-                return f.read().splitlines()
-        except FileNotFoundError as e:
-            print(f"Error: File not found: {e.filename}")
+    def get_dependencies(self, file_path: Path) -> List[str]:
+        if file_path.is_file():
+            return file_path.read_text().splitlines()
+        else:
+            print(f"Error: File not found: {file_path}")
             exit(1)
 
     def check_missing_dependencies(self):
@@ -20,16 +19,14 @@ class DependencyChecker:
         missing_dependencies = [dep for dep in requirements_dependencies if dep not in dockerfile_dependencies]
         return missing_dependencies
 
-    def print_missing_dependencies(self):
+    def __str__(self):
         missing_dependencies = self.check_missing_dependencies()
         if not missing_dependencies:
-            print("No missing dependencies")
+            return "No missing dependencies"
         else:
-            print("Missing dependencies:")
-            for dependency in missing_dependencies:
-                print(dependency)
+            return "Missing dependencies:\n" + "\n".join(missing_dependencies)
 
 
 if __name__ == "__main__":
     checker = DependencyChecker("requirements.txt", "Dockerfile")
-    checker.print_missing_dependencies()
+    print(checker)
