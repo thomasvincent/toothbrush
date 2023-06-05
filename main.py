@@ -1,34 +1,35 @@
 import os
-import subprocess
+from typing import List
 
-def get_dependencies(file_path):
-  with open(file_path, "r") as f:
-    return f.read().splitlines()
+class DependencyChecker:
+    def __init__(self, requirements_file: str, dockerfile: str):
+        self.requirements_file = requirements_file
+        self.dockerfile = dockerfile
 
-def main():
-  requirements_file_path = "requirements.txt"
-  dockerfile_path = "Dockerfile"
+    def get_dependencies(self, file_path: str) -> List[str]:
+        try:
+            with open(file_path, "r") as f:
+                return f.read().splitlines()
+        except FileNotFoundError as e:
+            print(f"Error: File not found: {e.filename}")
+            exit(1)
 
-  requirements_dependencies = []  # Assign a default empty list value
-  try:
-    requirements_dependencies = get_dependencies(requirements_file_path)
-    dockerfile_dependencies = get_dependencies(dockerfile_path)
-  except FileNotFoundError as e:
-    print("Error: File not found:", e.filename)
-    exit(1)
+    def check_missing_dependencies(self):
+        requirements_dependencies = self.get_dependencies(self.requirements_file)
+        dockerfile_dependencies = self.get_dependencies(self.dockerfile)
+        missing_dependencies = [dep for dep in requirements_dependencies if dep not in dockerfile_dependencies]
+        return missing_dependencies
 
-  missing_dependencies = []
-  for dependency in requirements_dependencies:
-    if dependency not in dockerfile_dependencies:
-      missing_dependencies.append(dependency)
-
-  if len(missing_dependencies) == 0:
-    print("No missing dependencies")
-  else:
-    print("Missing dependencies:")
-    for dependency in missing_dependencies:
-      print(dependency)
+    def print_missing_dependencies(self):
+        missing_dependencies = self.check_missing_dependencies()
+        if not missing_dependencies:
+            print("No missing dependencies")
+        else:
+            print("Missing dependencies:")
+            for dependency in missing_dependencies:
+                print(dependency)
 
 
 if __name__ == "__main__":
-  main()
+    checker = DependencyChecker("requirements.txt", "Dockerfile")
+    checker.print_missing_dependencies()
